@@ -9,7 +9,7 @@ class Player:
         self.player_interface = None
         self.name = name
         self.color = color
-        self.items = [0, 0, 0]
+        self.items = [0, 0, 0, 0]
 
     class Item:
         def __init__(self, name, canvas, coords: list[int, int], amount: int, color: str, icon: str):
@@ -23,8 +23,8 @@ class Player:
             self.button_subtract = None
             self.color = color
 
-        def add_item(self):
-            self.amount += 1
+        def add_item(self, amount=1):
+            self.amount += amount
             self.canvas.itemconfig(self.name, text=self.amount)
 
         def subtract_item(self):
@@ -58,28 +58,24 @@ class Player:
                                justify="center")
         player_name.insert(0, self.name)
 
-        label_trade = tk.Label(self.player_interface, text="Trades", fg='black', font=("Helvetica", 10), anchor="n",
-                               bg=self.color)
-        entry_trade = tk.Entry(self.player_interface, bd=4, width=3, bg=self.color, font=("Helvetica", 10),
-                               justify="center")
         label_buffs = tk.Label(self.player_interface, text="Effects", fg='black', font=("Helvetica", 10), anchor="n",
                                bg=self.color)
         entry_buffs = tk.Entry(self.player_interface, bd=4, width=20, bg=self.color, font=("Helvetica", 10),
                                justify="center")
 
-        item_1 = self.Item("item1", self.player_interface, [57, 75], self.items[0], self.color, "coins.png")
+        item_1 = self.Item("item1", self.player_interface, [50, 75], self.items[0], self.color, "coins.png")
         item_1.create_item()
-        item_2 = self.Item("item2", self.player_interface, [152, 75], self.items[1], self.color, "pickaxe.png")
+        item_2 = self.Item("item2", self.player_interface, [115, 75], self.items[1], self.color, "pickaxe.png")
         item_2.create_item()
-        item_3 = self.Item("item3", self.player_interface, [247, 75], self.items[2], self.color, "KeyPart.png")
+        item_3 = self.Item("item3", self.player_interface, [180, 75], self.items[2], self.color, "KeyPart.png")
         item_3.create_item()
+        item_4 = self.Item("item4", self.player_interface, [245, 75], self.items[3], self.color, "Trade.png")
+        item_4.create_item()
+        item_4.add_item(2)
 
         self.player_interface.create_window(150, 10, window=player_name, anchor="n")
-        self.player_interface.create_window(10, 150, window=label_trade, anchor="w")
-        self.player_interface.create_window(70, 150, window=entry_trade, anchor="w")
-        self.player_interface.create_window(10, 180, window=label_buffs, anchor="w")
-        self.player_interface.create_window(70, 180, window=entry_buffs, anchor="w")
-        entry_trade.insert(0, 1)
+        self.player_interface.create_window(10, 160, window=label_buffs, anchor="w")
+        self.player_interface.create_window(70, 160, window=entry_buffs, anchor="w")
 
 
 class Field:
@@ -109,12 +105,14 @@ class Field:
 
     def reveal(self):
         self.territory.itemconfigure(tagOrId="btndig", state="hidden")
+        self.is_open = True
 
     def field_place(self):
         icons = {"1gold": "Nugget.png", "Bomb": "Bomb.png", "Stone": "Stone.png", "1key": "KeyPart.png",
                  "5gold": "Treasure.png", "Pick": "pickaxe.png", "Megabomb": "Megabomb.png",
                  "CursedKey": "CursedKey.png", "Lockpick": "Key2.png", "Wish Stone": "MagicStone.png", "Smugglers": "Smugglers.png",
-                 "Supplies": "supplies.png", "Wicked Stone": "WickedStone.png", "Scaner": "Scaner.png", "Crystal mirror": "MagicMirror.png"}
+                 "Supplies": "supplies.png", "Wicked Stone": "WickedStone.png", "Scaner": "Scanner.png", "Crystal mirror": "MagicMirror.png",
+                 "Trader": "Trader.png", "Tinker": "Tinker.png"}
         center_fields = ("D4", "D5", "D6", "D7", "E4", "E5", "E6", "E7")
 
         self.territory = tk.Canvas(self.window, width=50, height=50, relief=tk.GROOVE, borderwidth=5,
@@ -126,7 +124,8 @@ class Field:
             self.territory = tk.Canvas(self.window, width=50, height=50, relief=tk.GROOVE, bd=7,
                                        bg="#8abcd4", highlightbackground="blue")
             self.territory.create_text(15, 50, text=self.trait, font=("Helvetica", 8), width=45, anchor="w")
-
+        if "Tinker" in self.trait or "Trader" in self.trait:
+            self.territory.create_text(15, 50, text=self.trait, font=("Helvetica", 8), width=45, anchor="w")
         self.territory.grid(row=self.coords[0], column=self.coords[1], padx=5, pady=5)
         if self.trait in icons.keys() and "Scan: " not in self.trait:
             self.icon = set_item_texture(icons.get(self.trait), (50, 50))
@@ -173,7 +172,6 @@ class CelebrationField:
             self.btn_cycle.config(image=self.image)
             self.territory.itemconfigure(tagOrId="table", window=self.btn_cycle)
             self.state = 0
-
 
     def cf_place(self):
         self.territory = tk.Canvas(self.window, width=100, height=100, relief=tk.GROOVE, borderwidth=5,

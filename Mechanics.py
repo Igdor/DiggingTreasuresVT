@@ -1,23 +1,26 @@
 from PIL import Image, ImageTk
+
+
 def distribute_traits():
-    dirt_traits = {"1gold": 15,         # Dirt tales: 50
-                   "Trader": 4,
+    dirt_traits = {"1gold": 14,         # Dirt tiles: 50
+                   "Trader": 5,
                    "Bomb": 6,
-                   "Pick": 10,
+                   "Pick": 8,
                    "CursedKey": 2,
                    "Lockpick": 2,
                    "Smugglers": 4,
                    "Tinker": 2,
                    "Crystal mirror": 2,
-                   "Scanner": 3
+                   "Scanner": 4,
+                   "Stone": 1
                    }
-    rock_traits = {"1key": 5,           # Rock tales: 30
+    rock_traits = {"1key": 5,           # Rock tiles: 30
                    "Megabomb": 3,
                    "Wish Stone": 2,
                    "Supplies": 3,
                    "5gold": 15,
                    "Wicked Stone": 2,
-                    }
+                   }
 
     def add_traits(traits, category):
         trait_list = []
