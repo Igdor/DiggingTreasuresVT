@@ -1,7 +1,7 @@
 import random
 import tkinter as tk
 
-from Mechanics import set_item_texture
+from Mechanics import read_config, set_item_texture
 
 
 # inintialising main window
@@ -10,6 +10,7 @@ window = tk.Tk()
 window.title("Digging treasures")
 window.geometry("1800x900+10+20")
 window.configure(bg=main_color)
+window.iconbitmap("Resources/icon.ico")
 
 title = tk.Label(window, text="Digging treasures", fg='black', font=("Helvetica", 18), anchor="ne", bg=main_color)
 title.pack()
@@ -24,9 +25,9 @@ bcg.place(x=-5, y=60)
 players_interface = tk.Frame(window, width=200, height=700, relief=tk.GROOVE, borderwidth=5, bg=main_color)
 players_interface.place(x=100, y=100)
 
+# main tables of a game, stage 1 and 2
 game_map = tk.Canvas(window, width=850, height=700, relief=tk.GROOVE, borderwidth=5, bg=main_color,
                      highlightbackground="black")
-
 celebration_map = tk.Canvas(window, width=600, height=600, relief=tk.GROOVE, borderwidth=5, bg=main_color,
                             highlightbackground="black")
 
@@ -38,29 +39,21 @@ label_trade = tk.Label(canvas_trade, text="Trading", fg='black', font=("Helvetic
 label_trade.place(x=110, y=10)
 image_pickaxe = set_item_texture("pickaxe.png", (35, 35))
 image_coins = set_item_texture("Coins.png", (35, 35))
-canvas_trade.create_image(120, 60, image=image_pickaxe)
 canvas_trade.create_image(60, 60, image=image_coins)
+canvas_trade.create_image(120, 60, image=image_pickaxe)
 canvas_trade.create_image(95, 90, image=image_coins)
-canvas_trade.create_image(230, 90, image=image_coins)
 canvas_trade.create_image(155, 90, image=image_pickaxe)
+canvas_trade.create_image(230, 90, image=image_coins)
 canvas_trade.create_image(290, 90, image=image_pickaxe)
-canvas_trade.create_text(20, 60, text="10         = 1          ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
-canvas_trade.create_text(20, 90, text="Sale: 5         = 1     or 10        = 2     ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
+canvas_trade.create_text(20, 60, text="10         > 1          ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
+canvas_trade.create_text(20, 90, text="Sale: 5         > 1     or 10        > 2     ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 canvas_trade.create_text(20, 120, text="Finished Row: 3 Gold Rush", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 canvas_trade.create_text(20, 150, text="Finished Column: 2 Magic Mirror", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 canvas_trade.create_text(20, 180, text="Finished Center: Gold Touch", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
-# creating window with items and mechanics description
-item_descriptions = [["Trader.png", "Trader: Add 1 trade, or gain\r1 Sale for the next trade"], ["Tinker.png", "Tinker: You can use 1 trade to exchange\r1 pickaxe for key"],
-                     ["Bomb.png", "Bomb: Open 1 adjacent tile immidiately,\reven rock. Gain 2 gold if no tiles nearby"],["Smugglers.png", "Smugglers: Steal 1 pickaxe, or open\r1 nearest rock, or gain 1 trade"],
-                     ["Key2.png", "Lockpick: Get 1 key,but give 10 gold\ror 1 pickaxe to opponent"], ["CursedKey.png", "Cursed key: Gain 1 key. Lose 5 gold,\rgain 2 Curse"],
-                     ["MagicMirror.png", "Crystal mirror: Skip 2 turns, but gain\rmagic mirror until your turn"], ["Treasure.png", "Treasury: Gain 5 gold\r "],
-                     ["MagicStone.png", "Wish Stone: You can exchange 10 gold for 1 key,\ropen any 1 tile, or add 2 trades"], ["Megabomb.png", "Megabomb: Open 3 adjanced tiles,\ror 1 closest tile if no tiles nearby"],
-                     ["WickedStone.png", "Wicked Stone: Steal 10 gold,\r1 pickaxe or inflict 2 curse on opponent"], ["supplies.png", "Supplies: Gain 2 pickaxes and 1 trade\r "],
-                     ["Scanner.png", "Scanner: See the number of keys\ron surrounding tiles"]]
 
-effect_descriptions = [[0, "Curse: Opponent recieve items you find\rinstead of you."], [0, "Magic Mirror: You receive copy of any item\robtained by opponent."],
-                       [0, "Gold Rush: For each charge, you can\ropen 1 additional tile for 3 gold each."], [0, "Gold Touch: You can open rocks for 5 gold."]]
-
+# creating window with items and mechanics descriptions
+item_descriptions = read_config("item_descriptions")
+effect_descriptions = read_config("effect_descriptions")
 canvas_description_list = []
 icons = []
 
@@ -112,4 +105,3 @@ canvas_roll.create_window(200, 80, window=dice_roll)
 canvas_roll.create_window(200, 180, window=btn_dice)
 canvas_roll.create_image(200, 380, image=wind_rose_image)
 canvas_roll.create_image(200, 600, image=tankard)
-

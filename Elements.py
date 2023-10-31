@@ -1,8 +1,9 @@
 import tkinter as tk
-from Mechanics import set_item_texture
+from Mechanics import read_config, set_item_texture
 
 
 class Player:
+    """A class for creating player interface for each player. Contains an Item subclass for handling each type of item in player`s posession."""
     def __init__(self, window, coords: list[int, int], color: str, name: str):
         self.window = window
         self.coords = coords
@@ -12,6 +13,7 @@ class Player:
         self.items = [0, 0, 0, 0]
 
     class Item:
+        """Subclass of a Player class. Created for manipulations with items in player inventory."""
         def __init__(self, name, canvas, coords: list[int, int], amount: int, color: str, icon: str):
             self.name = name
             self.canvas = canvas
@@ -35,12 +37,12 @@ class Player:
             return self.icon
 
         def create_item(self):
-            self.item_frame = tk.Frame(self.canvas, width=50, height=50, relief=tk.GROOVE, borderwidth=5,
-                                    bg=self.color)
+            """Creates an item widget in player interface. Consists of icon of the item, amount label and buttons for changing amount"""
+            self.item_frame = tk.Frame(self.canvas, width=50, height=50, relief=tk.GROOVE, borderwidth=5, bg=self.color)
             self.button_add = tk.Button(self.canvas, text="+", bg=self.color, command=self.add_item, height=1,
-                                   width=1, font=("Helvetica", 10))
+                                        width=1, font=("Helvetica", 10))
             self.button_subtract = tk.Button(self.canvas, text="-", bg=self.color, command=self.subtract_item, height=1,
-                                   width=1, font=("Helvetica", 10))
+                                             width=1, font=("Helvetica", 10))
 
             self.icon = set_item_texture(self.icon, (60, 50))
 
@@ -50,6 +52,7 @@ class Player:
             self.canvas.create_image(self.coords[0], self.coords[1], image=self.icon)
 
     def player_place(self):
+        """Creates a player interface in a main window."""
         self.player_interface = tk.Canvas(self.window, width=290, height=200, relief=tk.GROOVE, borderwidth=5, bg=self.color,
                                           highlightbackground="black")
         self.player_interface.grid(row=self.coords[0], column=self.coords[1])
@@ -79,6 +82,8 @@ class Player:
 
 
 class Field:
+    """A class for creating main game map. Each field contain a trait, initially hidden under a button,
+     and belongs to on of 2 types: dirt or rock."""
     instances = []
 
     def __init__(self, window, coords: tuple[int, int], name: str, field_type: int, trait: str, color: str):
@@ -108,29 +113,26 @@ class Field:
         self.is_open = True
 
     def field_place(self):
-        icons = {"1gold": "Nugget.png", "Bomb": "Bomb.png", "Stone": "Stone.png", "1key": "KeyPart.png",
-                 "5gold": "Treasure.png", "Pick": "pickaxe.png", "Megabomb": "Megabomb.png",
-                 "CursedKey": "CursedKey.png", "Lockpick": "Key2.png", "Wish Stone": "MagicStone.png", "Smugglers": "Smugglers.png",
-                 "Supplies": "supplies.png", "Wicked Stone": "WickedStone.png", "Scaner": "Scanner.png", "Crystal mirror": "MagicMirror.png",
-                 "Trader": "Trader.png", "Tinker": "Tinker.png"}
+        """Places a field of corresponding type on a coordinates in self.coords. Applies a special outline and color
+         if field has a scaner trait or placed in a center of a map."""
+        icons = read_config("fields_icons")
         center_fields = ("D4", "D5", "D6", "D7", "E4", "E5", "E6", "E7")
-
         self.territory = tk.Canvas(self.window, width=50, height=50, relief=tk.GROOVE, borderwidth=5,
                                    bg=self.color, highlightbackground="black")
         if self.name in center_fields:
             self.territory = tk.Canvas(self.window, width=50, height=50, relief=tk.RAISED, bd=7,
-                                         bg="#ba950f", highlightbackground="orange")
+                                       bg="#ba950f", highlightbackground="orange")
         if "Scan: " in self.trait:
             self.territory = tk.Canvas(self.window, width=50, height=50, relief=tk.GROOVE, bd=7,
                                        bg="#8abcd4", highlightbackground="blue")
             self.territory.create_text(15, 50, text=self.trait, font=("Helvetica", 8), width=45, anchor="w")
-        if "Tinker" in self.trait or "Trader" in self.trait:
+        if "Tinker" in self.trait or "Trader" in self.trait:  # adds labels to a tiles with these traits in addition to an icon.
             self.territory.create_text(15, 50, text=self.trait, font=("Helvetica", 8), width=45, anchor="w")
         self.territory.grid(row=self.coords[0], column=self.coords[1], padx=5, pady=5)
         if self.trait in icons.keys() and "Scan: " not in self.trait:
             self.icon = set_item_texture(icons.get(self.trait), (50, 50))
             self.territory.create_image(32, 32, image=self.icon)
-        elif "Scan: " in self.trait:
+        elif "Scan: " in self.trait:  # this is required to properly place an icon for the scaner, as an actual trait name can differ bc of scan results
             self.trait = "Scaner"
             self.icon = set_item_texture(icons.get(self.trait), (40, 40))
             self.territory.create_image(33, 27, image=self.icon)
@@ -146,6 +148,7 @@ class Field:
 
 
 class CelebrationField:
+    """A class to create a fields for a second (secret) stage of a game. Essentialy slightly altered Tic-Tac-Toe field."""
     def __init__(self, window, coords, name, image, color):
         self.window = window
         self.territory = None
@@ -157,6 +160,7 @@ class CelebrationField:
         self.btn_cycle = None
 
     def cycle_mark(self):
+        """Cycles between 3 appearances of field: empty table, table with one type of beer, and table with other type."""
         if self.state == 0:
             self.image = set_item_texture("BeerOnTable1.png", (110, 110))
             self.btn_cycle.config(image=self.image)
@@ -175,10 +179,8 @@ class CelebrationField:
 
     def cf_place(self):
         self.territory = tk.Canvas(self.window, width=100, height=100, relief=tk.GROOVE, borderwidth=5,
-                                bg=self.color, highlightbackground="black")
+                                   bg=self.color, highlightbackground="black")
         self.territory.grid(row=self.coords[0], column=self.coords[1], padx=5, pady=5)
         self.btn_cycle = tk.Button(self.territory, height=100, width=100, command=self.cycle_mark, text=self.name, compound="center",
-                                 font=("Arial", 12), bg=self.color, image=self.image)
+                                   font=("Arial", 12), bg=self.color, image=self.image)
         self.territory.create_window(57, 55, window=self.btn_cycle, tags="table")
-
-

@@ -1,26 +1,25 @@
 from PIL import Image, ImageTk
+import json
+
+
+def read_config(section):
+    with open('config.json', 'r') as file:
+        config = json.load(file)[section]
+        return config
+
+
+def set_item_texture(texture: str, size: tuple):
+    texture = Image.open("Resources/" + texture)
+    texture = texture.resize(size)
+    texture = ImageTk.PhotoImage(texture)
+    return texture
 
 
 def distribute_traits():
-    dirt_traits = {"1gold": 14,         # Dirt tiles: 50
-                   "Trader": 5,
-                   "Bomb": 6,
-                   "Pick": 8,
-                   "CursedKey": 2,
-                   "Lockpick": 2,
-                   "Smugglers": 4,
-                   "Tinker": 2,
-                   "Crystal mirror": 2,
-                   "Scanner": 4,
-                   "Stone": 1
-                   }
-    rock_traits = {"1key": 5,           # Rock tiles: 30
-                   "Megabomb": 3,
-                   "Wish Stone": 2,
-                   "Supplies": 3,
-                   "5gold": 15,
-                   "Wicked Stone": 2,
-                   }
+    """Creates list with 80 entries, every entry representing a single territory, consisting from two elements: trait and territory type.
+    Required for creation of a main game field. Traits and amonut of territories can be customised in config.json"""
+    dirt_traits = read_config('dirt_traits')  # 50 territories
+    rock_traits = read_config('rock_traits')  # 30 territories
 
     def add_traits(traits, category):
         trait_list = []
@@ -38,31 +37,24 @@ def distribute_traits():
     return dirt_trait_list
 
 
-def set_item_texture(texture: str, size: tuple):
-    texture = Image.open("Resources/" + texture)
-    texture = texture.resize(size)
-    texture = ImageTk.PhotoImage(texture)
-    return texture
+def check_surrounding_tiles(field_class, coords: tuple):
+    """ Functionality for the scanner territory. It checks if surrounding territories in 1 tile radius have a "key" trait (any of three types),
+     and returns a number of a keys nearby"""
+    adj_tiles = [(coords[0] - 1, coords[1] - 1),  # upper left
+                 (coords[0] - 1, coords[1]),  # upper center
+                 (coords[0] - 1, coords[1] + 1),  # upper right
 
+                 (coords[0], coords[1] - 1),  # center left
+                 (coords[0], coords[1] + 1),  # center right
 
-def check_surrounding_tiles(cls, coords: tuple):
-    """ Functionality for the scanner tile. It checks if surrounding fields in 1 tile radius has key (any),
-     and returns number of a keys nearby"""
-    adj_tiles = [(coords[0] - 1, coords[1] - 1),
-                 (coords[0] - 1, coords[1]),
-                 (coords[0] - 1, coords[1] + 1),
-
-                 (coords[0], coords[1] - 1),
-                 (coords[0], coords[1] + 1),
-
-                 (coords[0] + 1, coords[1] - 1),
-                 (coords[0] + 1, coords[1]),
-                 (coords[0] + 1, coords[1] + 1),
-                  ]
+                 (coords[0] + 1, coords[1] - 1),  # lower left
+                 (coords[0] + 1, coords[1]),  # lower center
+                 (coords[0] + 1, coords[1] + 1),  # lower right
+                 ]
     adj_traits = []
-    for field_instance in cls.instances:
-        if cls.get_attr(field_instance)[1] in adj_tiles:
-            adj_traits.append(cls.get_attr(field_instance)[2])
+    for field_instance in field_class.instances:
+        if field_class.get_attr(field_instance)[1] in adj_tiles:
+            adj_traits.append(field_class.get_attr(field_instance)[2])
     scan_results = 0
     for entry in adj_traits:
         if entry in ["1key", "CursedKey", "Lockpick"]:
