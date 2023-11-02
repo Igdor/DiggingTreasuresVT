@@ -38,7 +38,7 @@ def distribute_traits():
 
 
 def check_surrounding_tiles(field_class, coords: tuple):
-    """ Functionality for the scanner territory. It checks if surrounding territories in 1 tile radius have a "key" trait (any of three types),
+    """ Functionality for the scanner field. It checks if surrounding territories in 1 tile radius have a "key" trait (any of three types),
      and returns a number of a keys nearby"""
     adj_tiles = [(coords[0] - 1, coords[1] - 1),  # upper left
                  (coords[0] - 1, coords[1]),  # upper center

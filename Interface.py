@@ -47,8 +47,8 @@ canvas_trade.create_image(230, 90, image=image_coins)
 canvas_trade.create_image(290, 90, image=image_pickaxe)
 canvas_trade.create_text(20, 60, text="10         > 1          ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 canvas_trade.create_text(20, 90, text="Sale: 5         > 1     or 10        > 2     ", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
-canvas_trade.create_text(20, 120, text="Finished Row: 3 Gold Rush", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
-canvas_trade.create_text(20, 150, text="Finished Column: 2 Magic Mirror", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
+canvas_trade.create_text(20, 120, text="Finished Row: Gold Rush", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
+canvas_trade.create_text(20, 150, text="Finished Column: Magic Mirror", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 canvas_trade.create_text(20, 180, text="Finished Center: Gold Touch", font=("Helvetica", 12), width=400, anchor="w", activefill="#313d52")
 
 # creating window with items and mechanics descriptions
